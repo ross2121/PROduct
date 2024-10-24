@@ -25,7 +25,7 @@ export const authorizemanager = (req, res, next) => {
     const decode= jwt.verify(token,process.env.JWT_TOKEN);
     req.user=decode;
     // console.log("User from auth middleware:", req.user); // Log the user object
-    if ( req.user && req.user.role=== "admin") {
+    if ( req.user && req.user.role=== "manager") {
       console.log("Access denied. User role is not 'Customer'");
       throw new  unaunthicated("Access denied");
     }

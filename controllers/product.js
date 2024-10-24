@@ -5,13 +5,19 @@ import { StatusCodes } from "http-status-codes";
 // import badrequest from "../errors/badrequest.js";
 const prisma=new PrismaClient();
 export const createproduct=async(req,res)=>{
-    const{name,SKU,description, price,stock,Created}=req.body;
+    const{name,SKU,description, price,stock,CreatedBY}=req.body;
     // console.log("dsdsa");
     // req.body.Agent=Admin._id;
     // const user=await User.findById(req.user.id);
     if(!name||!SKU||!description||!price||!stock){
         throw new badrequest("Please provode  all values");
     }
+    let PREVSTOCK=0;
+    const prev_stock=await prisma.product.findFirst({
+        where:{
+            name:name
+        }
+    })
     const product=await prisma.product.create({
         data:{
             name,
@@ -19,11 +25,21 @@ export const createproduct=async(req,res)=>{
             description,
             price,
             stock,
-            Created
+            CreatedBY,
         }
     });
-    console.log("dasd");
-    res.status(StatusCodes.CREATED).json({product});
+    
+    if(prev_stock){
+        PREVSTOCK=prev_stock.stock;
+    }
+    const Stock=await prisma.stock.create({
+        data:{
+            previousQuantity:PREVSTOCK,
+            newQuantity:stock,
+            productId:product.id
+        }
+    })
+    res.status(StatusCodes.CREATED).json({product,Stock});
 };
 export const updateproduct = async (req, res) => {
     const { id: productid } = req.params; 
@@ -32,15 +48,22 @@ export const updateproduct = async (req, res) => {
     if (!name || !SKU||!description||!price||!stock) {
         throw new badrequest('Please provide all values');
     }
-
-    const cinema = await prisma.product.findUnique({
+    let PREVSTOCK=0;
+    const prev_stock=await prisma.product.findFirst({
+        where:{
+            name:name
+        }
+    })
+    if(prev_stock){
+        PREVSTOCK=prev_stock.stock;
+    }
+     const  product = await prisma.product.findUnique({
         where:{
             id:Productid
         }
     })
-    
-    if (!cinema) {
-        throw new NotFoundError(`No cinema with id: ${productid}`);
+    if (!product) {
+        throw new NotFoundError(`No  product with id: ${productid}`);
     }
     const updatedproduct = await  prisma.product.update(
        {
@@ -53,11 +76,17 @@ export const updateproduct = async (req, res) => {
            price,
            description
         }
-       }
-        
+       }    
     );
-
-    res.status(StatusCodes.OK).json({ updatedproduct });
+    const Stock=await prisma.stock.create({
+        data:{
+            previousQuantity:PREVSTOCK,
+            newQuantity:stock,
+            productId:product.id
+        }
+    })
+    
+    res.status(StatusCodes.OK).json({ updatedproduct,Stock });
 };
 
 export const deleteproduct=async(req,res)=>{
@@ -69,7 +98,7 @@ export const deleteproduct=async(req,res)=>{
         },
     })
     if(!product){
-        throw new notfound("No Cinema is found");
+        throw new notfound("No  product is found");
     }
        const deleteproduct=await  prisma.product.delete({
         where:{
@@ -80,11 +109,9 @@ export const deleteproduct=async(req,res)=>{
     
 }
 export const random=async(req,res)=>{
-       const property=await Cinema.aggregate([{$sample:{size:40}}]).populate("Agent","name image").populate("property");
+       const property=await  product.aggregate([{$sample:{size:40}}]).populate("Agent","name image").populate("property");
         res.status(200).json({property});
 }
-
-
 export const getallproduct=async(req,res,next)=>{
     try{
          const product=await prisma.product.findMany();
@@ -107,6 +134,30 @@ export const getproductbyId=async(req,res,next)=>{
         next(err);
     }
 }
+export const getProductsByEmail = async (req, res, next) => {
+        // const  {email } = req.body;
+        // const product=await prisma.product.findMany();
+        // return res.status(200).json(product);
+       
+        const { email:email } = req.params;
+
+// Use findMany when searching for multiple products by CreatedBY (email)
+const products = await prisma.product.findMany({
+  where: {
+    CreatedBY: email,
+  },
+});
+
+// Handle cases where no products are found
+if (products.length === 0) {
+  return res.status(404).json({ message: "No products found for this user" });
+}
+
+res.status(200).json(products);
+        // res.status(200).json(products);
+
+};
+  
 export const emailid=async(req,res,next)=>{
     const {id:userid}=req.params
     const id = parseInt(userid, 10);
@@ -132,7 +183,6 @@ try {
 } catch (error) {
   return res.status(500).json({ message: 'Server error', error: error.message });
 }
-
 }
 
 

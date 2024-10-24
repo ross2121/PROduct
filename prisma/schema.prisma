@@ -13,7 +13,7 @@ model Admin {
   name     String
   password String
   role     String   @default("admin")
-  products Product[] @relation("AdminProducts") 
+  products Product[] @relation("AdminProducts")
 }
 
 model InventoryManager {
@@ -22,17 +22,28 @@ model InventoryManager {
   name     String
   password String
   role     String   @default("manager")
-  products Product[] @relation("ManagerProducts") 
+  products Product[] @relation("ManagerProducts")
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  SKU         String   
-  description String
-  price       Int
-  stock       Int
-  Created     String
-  admins      Admin[]  @relation("AdminProducts") 
-  inventoryManagers InventoryManager[] @relation("ManagerProducts") 
+  id                Int                @id @default(autoincrement())
+  name              String   
+  SKU               String
+  description       String
+  price             Int
+  stock             Int
+  CreatedBY           String?
+  CreatedAt           DateTime               @default(now())
+  admins            Admin[]            @relation("AdminProducts")
+  inventoryManagers InventoryManager[] @relation("ManagerProducts")
+  stockRecords      Stock[]            @relation("ProductStock")
+}
+
+model Stock {
+  id             Int      @id @default(autoincrement())
+  previousQuantity  Int
+  newQuantity    Int
+  updatedAt      DateTime @default(now())
+  product        Product  @relation("ProductStock", fields: [productId], references: [id])
+  productId      Int
 }
