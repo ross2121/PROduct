@@ -5,7 +5,7 @@ import { StatusCodes } from "http-status-codes";
 // import badrequest from "../errors/badrequest.js";
 const prisma=new PrismaClient();
 export const createproduct=async(req,res)=>{
-    const{name,SKU,description, price,stock}=req.body;
+    const{name,SKU,description, price,stock,Created}=req.body;
     // console.log("dsdsa");
     // req.body.Agent=Admin._id;
     // const user=await User.findById(req.user.id);
@@ -18,7 +18,8 @@ export const createproduct=async(req,res)=>{
             SKU,
             description,
             price,
-            stock
+            stock,
+            Created
         }
     });
     console.log("dasd");
@@ -39,7 +40,7 @@ export const updateproduct = async (req, res) => {
     })
     
     if (!cinema) {
-        throw new NotFoundError(`No cinema with id: ${cinemaId}`);
+        throw new NotFoundError(`No cinema with id: ${productid}`);
     }
     const updatedproduct = await  prisma.product.update(
        {
@@ -105,6 +106,33 @@ export const getproductbyId=async(req,res,next)=>{
     } catch (err) {
         next(err);
     }
+}
+export const emailid=async(req,res,next)=>{
+    const {id:userid}=req.params
+    const id = parseInt(userid, 10);
+try {
+  const inventoryManager = await prisma.inventoryManager.findUnique({
+    where: {
+      id: id
+    }
+  });
+  if (inventoryManager) {
+    return res.status(200).json(inventoryManager.email); 
+  }
+  const adminUser = await prisma.admin.findUnique({
+    where: {
+      id: id
+    }
+  });
+  if (adminUser) {
+    return res.status(200).json(adminUser.email); 
+  }
+  return res.status(404).json({ message: 'User not found' });
+
+} catch (error) {
+  return res.status(500).json({ message: 'Server error', error: error.message });
+}
+
 }
 
 

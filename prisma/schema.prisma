@@ -28,10 +28,11 @@ model InventoryManager {
 model Product {
   id          Int      @id @default(autoincrement())
   name        String
-  SKU         String   @unique
+  SKU         String   
   description String
   price       Int
   stock       Int
+  Created     String
   admins      Admin[]  @relation("AdminProducts") 
   inventoryManagers InventoryManager[] @relation("ManagerProducts") 
 }
