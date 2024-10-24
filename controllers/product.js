@@ -5,7 +5,7 @@ import { StatusCodes } from "http-status-codes";
 // import badrequest from "../errors/badrequest.js";
 const prisma=new PrismaClient();
 export const createproduct=async(req,res)=>{
-    const{name,SKU,description, price,stock,CreatedBY}=req.body;
+    const{name,SKU,description, price,stock,createdby}=req.body;
     // console.log("dsdsa");
     // req.body.Agent=Admin._id;
     // const user=await User.findById(req.user.id);
@@ -25,7 +25,7 @@ export const createproduct=async(req,res)=>{
             description,
             price,
             stock,
-            CreatedBY,
+            createdby,
         }
     });
     
@@ -43,9 +43,9 @@ export const createproduct=async(req,res)=>{
 };
 export const updateproduct = async (req, res) => {
     const { id: productid } = req.params; 
-    const{name,SKU,description, price,stock}=req.body;
+    const{name,SKU,description, price,stock,createdby}=req.body;
      const Productid=parseInt(productid,10);
-    if (!name || !SKU||!description||!price||!stock) {
+    if (!name || !SKU||!description||!price||!stock||!createdby) {
         throw new badrequest('Please provide all values');
     }
     let PREVSTOCK=0;
@@ -74,7 +74,8 @@ export const updateproduct = async (req, res) => {
            SKU,
            stock,
            price,
-           description
+           description,
+           createdby
         }
        }    
     );
