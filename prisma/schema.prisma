@@ -32,7 +32,7 @@ model Product {
   description       String
   price             Int
   stock             Int
-  CreatedBY           String
+  CreatedBY         String
   CreatedAt           DateTime               @default(now())
   admins            Admin[]            @relation("AdminProducts")
   inventoryManagers InventoryManager[] @relation("ManagerProducts")
