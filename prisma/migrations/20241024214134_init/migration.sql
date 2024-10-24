@@ -1,11 +1,13 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE "Admin" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" TEXT NOT NULL DEFAULT 'admin',
 
-  - You are about to drop the `Inventory_Manager` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-DROP TABLE "Inventory_Manager";
+    CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "InventoryManager" (
@@ -26,8 +28,21 @@ CREATE TABLE "Product" (
     "description" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "stock" INTEGER NOT NULL,
+    "CreatedBY" TEXT NOT NULL,
+    "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Stock" (
+    "id" SERIAL NOT NULL,
+    "previousQuantity" INTEGER NOT NULL,
+    "newQuantity" INTEGER NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "productId" INTEGER NOT NULL,
+
+    CONSTRAINT "Stock_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -43,10 +58,10 @@ CREATE TABLE "_ManagerProducts" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "InventoryManager_email_key" ON "InventoryManager"("email");
+CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Product_SKU_key" ON "Product"("SKU");
+CREATE UNIQUE INDEX "InventoryManager_email_key" ON "InventoryManager"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_AdminProducts_AB_unique" ON "_AdminProducts"("A", "B");
@@ -59,6 +74,9 @@ CREATE UNIQUE INDEX "_ManagerProducts_AB_unique" ON "_ManagerProducts"("A", "B")
 
 -- CreateIndex
 CREATE INDEX "_ManagerProducts_B_index" ON "_ManagerProducts"("B");
+
+-- AddForeignKey
+ALTER TABLE "Stock" ADD CONSTRAINT "Stock_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_AdminProducts" ADD CONSTRAINT "_AdminProducts_A_fkey" FOREIGN KEY ("A") REFERENCES "Admin"("id") ON DELETE CASCADE ON UPDATE CASCADE;
