@@ -295,3 +295,11 @@ export const resetpassword=async(req,res,next)=>{
         next(error)
     }
 }
+export const getalluser=async(req,res,next)=>{
+    try {
+        const user=await prisma.inventoryManager.findMany();
+        res.status(200).json({user});
+    } catch (error) {
+        next(error);
+    }
+}

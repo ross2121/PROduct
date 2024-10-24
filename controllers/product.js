@@ -145,7 +145,7 @@ export const getProductsByEmail = async (req, res, next) => {
 // Use findMany when searching for multiple products by CreatedBY (email)
 const products = await prisma.product.findMany({
   where: {
-    CreatedBY: email,
+    createdby: email,
   },
 });
 
@@ -185,5 +185,26 @@ try {
   return res.status(500).json({ message: 'Server error', error: error.message });
 }
 }
-
+export const getalluser=async(req,res,next)=>{
+    try {
+        const user=await prisma.inventoryManager.findMany();
+        res.status(200).json({user});
+    } catch (error) {
+        next(error);
+    }
+}
+export const product=async(req,res,next)=>{
+    try {
+        const {id:productid}=req.params
+        const id = parseInt(productid, 10);
+        const products=await prisma.stock.findMany({
+            where:{
+                productId:id
+            }
+        })
+        res.status(200).json({products});
+    } catch (error) {
+        next(error);
+    }
+}
 
