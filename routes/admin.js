@@ -1,5 +1,5 @@
 import express from "express";
-import { Register,Login,logout,generaotp,googleAuthSignIn,verifyotp,resetpassword,finduserbyemail,createResetSession,getuser,updateuser,deleateuser,getuserbyid} from "../controllers/adminauth.js";
+import { Register,Login,logout,generaotp,googleAuthSignIn,verifyotp,resetpassword,finduserbyemail,createResetSession,getuser,updateuser,deleateuser,getuserbyid,finduser} from "../controllers/adminauth.js";
 // import { auth,authorizemanager} from "../middleware/auth.js";
 
 const router=express.Router();
@@ -19,6 +19,8 @@ router.get("/findbyemail",finduserbyemail);
 router.get("/generateotp",generaotp);
 router.post("/verifyotp",verifyotp);
 router.get("/createresetsession",createResetSession);
+router.get("/user/:id",finduser);
+
 // router.patch("/user/:id",[authorizemanager],updateuser);
 // router.delete("/user/:id",[authorizemanager],deleateuser);
 router.get("/user",getuser);

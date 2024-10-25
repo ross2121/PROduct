@@ -348,3 +348,22 @@ export const resetpassword=async(req,res,next)=>{
         next(error)
     }
 }
+export const finduser=async(req,res,next)=>{
+    try {
+        const {id:Userid}=req.params
+        const id=parseInt(Userid,10);
+        const user=await prisma.inventoryManager.findUnique({
+            where:{
+                id:id
+            }
+        })
+        const products=await prisma.product.findMany({
+            where:{
+                createdby:user.email
+            }
+        })
+        return res.status(200).send({products})
+    } catch (error) {
+        next(error);
+    }
+}

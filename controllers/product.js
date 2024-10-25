@@ -101,12 +101,15 @@ export const deleteproduct=async(req,res)=>{
     if(!product){
         throw new notfound("No  product is found");
     }
+   const stockdelete= await prisma.stock.deleteMany({
+        where: { productId:Productid },
+      });
        const deleteproduct=await  prisma.product.delete({
         where:{
             id:Productid
         }
        })
-     res.status(StatusCodes.OK).json({deleteproduct});
+     res.status(StatusCodes.OK).json({deleteproduct,stockdelete});
     
 }
 export const random=async(req,res)=>{
@@ -207,4 +210,5 @@ export const product=async(req,res,next)=>{
         next(error);
     }
 }
+
 
