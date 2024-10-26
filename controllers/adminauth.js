@@ -187,23 +187,24 @@ const verifyotp={
     to:email,
     subject:'Account verification OTP',
     html:` <div style="font-family: Poppins, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
-    <h1 style="font-size: 22px; font-weight: 500; color: #854CE6; text-align: center; margin-bottom: 30px;">Verify Your BookSHow Account</h1>
+    <h1 style="font-size: 22px; font-weight: 500; color: #854CE6; text-align: center; margin-bottom: 30px;">Verify Your ERP System Admin Account</h1>
     <div style="background-color: #FFF; border: 1px solid #e5e5e5; border-radius: 5px; box-shadow: 0px 3px 6px rgba(0,0,0,0.05);">
         <div style="background-color: #854CE6; border-top-left-radius: 5px; border-top-right-radius: 5px; padding: 20px 0;">
-            <h2 style="font-size: 28px; font-weight: 500; color: #FFF; text-align: center; margin-bottom: 10px;">Verification Code</h2>
+            <h2 style="font-size: 28px; font-weight: 500; color: #FFF; text-align: center; margin-bottom: 10px;">Admin Verification Code</h2>
             <h1 style="font-size: 32px; font-weight: 500; color: #FFF; text-align: center; margin-bottom: 20px;">${req.app.locals.OTP}</h1>
         </div>
         <div style="padding: 30px;">
-            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Dear ${name},</p>
-            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Thank you for creating a Bookmyshow  account. To activate your account, please enter the following verification code:</p>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Dear Admin ${name},</p>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Thank you for registering your ERP System Admin account. To activate your admin account, please enter the following verification code:</p>
             <p style="font-size: 20px; font-weight: 500; color: #666; text-align: center; margin-bottom: 30px; color: #854CE6;">${req.app.locals.OTP}</p>
-            <p style="font-size: 12px; color: #666; margin-bottom: 20px;">Please enter this code in the Realtor app to activate your account.</p>
-            <p style="font-size: 12px; color: #666; margin-bottom: 20px;">If you did not create a bookshow account, please disregard this email.</p>
+            <p style="font-size: 12px; color: #666; margin-bottom: 20px;">Please enter this code in the ERP system to complete your admin account activation.</p>
+            <p style="font-size: 12px; color: #666; margin-bottom: 20px;">If you did not create an ERP system admin account, please disregard this email.</p>
         </div>
     </div>
     <br>
-    <p style="font-size: 16px; color: #666; margin-bottom: 20px; text-align: center;">Best regards,<br>The Realtor Team</p>
-</div>`
+    <p style="font-size: 16px; color: #666; margin-bottom: 20px; text-align: center;">Best regards,<br>The ERP System Team</p>
+</div>
+`
 };
 const resetpasswordotp={
     from:process.env.EMAIL_USERNAME,
@@ -363,6 +364,20 @@ export const finduser=async(req,res,next)=>{
             }
         })
         return res.status(200).send({products})
+    } catch (error) {
+        next(error);
+    }
+}
+export const userbyid=async(req,res,next)=>{
+    try {
+        const {id:userid}=req.params;
+        const ID=parseInt(userid,10);
+        const user=await prisma.inventoryManager.findUnique({
+            where:{
+                id:ID
+            }
+        })
+        res.status(200).json({user});
     } catch (error) {
         next(error);
     }
