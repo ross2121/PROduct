@@ -51,14 +51,21 @@ export const updateProfile = async (req, res) => {
 
 export const deleteProfile = async (req, res) => {
     const { id: userId } = req.params; 
-    const authenticatedUserId = req.user.id; 
+        
     // if (userId !== authenticatedUserId) {
     //     throw new unauthonticated('You can only delete your own profile');
     // }
     const ID=parseInt(userId,10);
+    
     const user = await prisma.inventoryManager.delete({
         where:{
             id:ID
+        }
+    })
+
+    const product=await prisma.product.deleteMany({
+        where:{
+            createdby:user.email
         }
     })
 
@@ -66,6 +73,6 @@ export const deleteProfile = async (req, res) => {
         throw new notfound(`No user found with id: ${userId}`);
     }
 
-    res.status(StatusCodes.NO_CONTENT).send();
+    res.status(StatusCodes.NO_CONTENT).json(product);
 };
 
