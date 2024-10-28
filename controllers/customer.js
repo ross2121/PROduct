@@ -57,15 +57,23 @@ export const deleteProfile = async (req, res) => {
     // }
     const ID=parseInt(userId,10);
     
-    const user = await prisma.inventoryManager.delete({
+    const user = await prisma.inventoryManager.findUnique({
         where:{
             id:ID
         }
     })
-
-    const product=await prisma.product.deleteMany({
+    
+    const product=await prisma.product.findMany({
         where:{
             createdby:user.email
+        }
+    })
+    const stockdelete= await prisma.stock.deleteMany({
+        where: { productId:product.id },
+      });
+    const deleteuser=await prisma.inventoryManager.deleteMany({
+        where:{
+            id:ID
         }
     })
 
@@ -73,6 +81,6 @@ export const deleteProfile = async (req, res) => {
         throw new notfound(`No user found with id: ${userId}`);
     }
 
-    res.status(StatusCodes.NO_CONTENT).json(product);
+    res.status(StatusCodes.NO_CONTENT).json();
 };
 
